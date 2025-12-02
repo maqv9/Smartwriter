@@ -1,10 +1,12 @@
-
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { GoogleGenAI, LiveSession, LiveServerMessage, Modality, Blob } from '@google/genai';
+import { GoogleGenAI, LiveServerMessage, Modality, Blob } from '@google/genai';
 import { Spinner } from './Spinner';
 import type { InterviewTranscriptEntry, InterviewFeedback } from '../types';
 import { generateInterviewFeedback } from '../services/geminiService';
 import { InterviewIcon } from './icons';
+
+// Define LiveSession type as it is not exported by the SDK
+type LiveSession = Awaited<ReturnType<InstanceType<typeof GoogleGenAI>['live']['connect']>>;
 
 // Audio Encoding/Decoding helpers (from Gemini docs)
 function encode(bytes: Uint8Array) {
@@ -582,23 +584,6 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ onBack }) 
                 <button onClick={handlePrint} className="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition">Download as PDF</button>
                 <button onClick={onBack} className="text-sm font-semibold text-gray-500 hover:text-teal-600">Back to Tools</button>
             </div>
-        </div>
-    );
-
-    const renderContent = () => {
-        switch(status) {
-            case 'idle': return renderSetup();
-            case 'connecting': return <Spinner message="Connecting..." />;
-            case 'interviewing': return renderInterview();
-            case 'generating_report': return <Spinner message="Generating your feedback report..." />;
-            case 'report_ready': return renderReport();
-            default: return renderSetup();
-        }
-    }
-
-    return (
-        <div className="p-4 md:p-6 h-full flex flex-col justify-center items-center">
-            {renderContent()}
         </div>
     );
 }

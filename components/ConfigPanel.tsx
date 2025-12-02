@@ -115,7 +115,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                         </button>
                     ))}
                 </div>
-            </section>
+            </Section>
 
             <Section title="Context & Tone" step={3}>
                  <div className="mb-6">
