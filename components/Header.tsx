@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { User } from 'firebase/auth';
+import { User } from '@supabase/supabase-js';
 
 const SearchIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props}>
@@ -50,14 +50,16 @@ export const Header: React.FC<HeaderProps> = ({ user, onSignOut }) => {
                     <div className="flex items-center gap-3 cursor-pointer group relative p-1 rounded-full hover:bg-white/30 transition pr-3">
                         <div className="relative">
                             <img
-                                src={`https://api.dicebear.com/9.x/notionists/svg?seed=${user?.email || 'Felix'}`}
+                                src={`https://api.dicebear.com/9.x/notionists/svg?seed=${user?.email || 'User'}`}
                                 alt="User Avatar"
                                 className="h-10 w-10 rounded-full bg-indigo-100 border-2 border-white shadow-sm"
                             />
                             <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>
                         </div>
                         <div className="hidden md:block text-left">
-                            <p className="font-bold text-sm text-gray-800 leading-none mb-1">Carla Sanford</p>
+                            <p className="font-bold text-sm text-gray-800 leading-none mb-1">
+                                {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
+                            </p>
                             <p className="text-xs font-medium text-gray-500">Pro Member</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 ml-1" viewBox="0 0 20 20" fill="currentColor">

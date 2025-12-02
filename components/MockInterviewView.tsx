@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality, Blob } from '@google/genai';
 import { Spinner } from './Spinner';
@@ -339,7 +340,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ onBack }) 
         
         try {
             // Send text turn to the model
-            await session.send({
+            await (session as any).send({
                 clientContent: {
                     turns: [{
                         parts: [{ text: textInput }],
@@ -586,4 +587,16 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ onBack }) 
             </div>
         </div>
     );
-}
+
+    return (
+        <div className="p-4 md:p-6 h-full flex flex-col bg-white overflow-y-auto relative">
+            {status === 'generating_report' && <Spinner message="Generating feedback report..." />}
+            
+            {status === 'idle' || status === 'connecting' ? renderSetup() : null}
+            
+            {status === 'interviewing' ? renderInterview() : null}
+            
+            {status === 'report_ready' ? renderReport() : null}
+        </div>
+    );
+};

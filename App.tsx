@@ -12,8 +12,8 @@ import { ToolCard } from './components/ToolCard';
 import { SummarizeTextView } from './components/SummarizeTextView';
 import { ResearchGeneratorView } from './components/ResearchGeneratorView';
 import { GrammarCheckerView } from './components/GrammarCheckerView';
-import { auth } from './firebase';
-import { onAuthStateChanged, User, signOut } from 'firebase/auth';
+import { supabase } from './supabaseClient';
+import { User } from '@supabase/supabase-js';
 import { LoginView } from './components/LoginView';
 import { MockInterviewView } from './components/MockInterviewView';
 import { MathSolverView } from './components/MathSolverView';
@@ -289,13 +289,37 @@ const ArticleGeneratorView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 // --- Main App Component ---
 
 const App: React.FC = () => {
-    const [user, setUser] = useState<User | null>({ email: 'demo@smartwriter.ai', uid: 'demo123' } as User);
+    const [user, setUser] = useState<User | null>(null);
     const [activeToolId, setActiveToolId] = useState<string | null>(null);
+    const [authLoading, setAuthLoading] = useState(true);
+
+    useEffect(() => {
+        // Check active session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser(session?.user ?? null);
+            setAuthLoading(false);
+        });
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+            setAuthLoading(false);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
 
     const handleSignOut = () => {
-        signOut(auth).catch(console.error);
-        setUser(null);
+        supabase.auth.signOut().catch(console.error);
     };
+
+    if (authLoading) {
+        return <Spinner message="Loading..." />;
+    }
+
+    if (!user) {
+        return <LoginView />;
+    }
 
     const renderToolView = () => {
         switch (activeToolId) {
